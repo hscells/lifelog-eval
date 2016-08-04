@@ -1,0 +1,12 @@
+server:
+    type: default
+    applicationConnectors:
+        -   type: http
+            port: ${PORT:-8080} # this is a heroku thing
+
+elastic:
+    url: ${LIFELOGEVAL_ELASTIC_URL:-127.0.0.1}
+    username: ${LIFELOGEVAL_ELASTIC_USERNAME:-admin}
+    password: ${LIFELOGEVAL_ELASTIC_PASSWORD:-password}
+    index: ${LIFELOGEVAL_ELASTIC_INDEX:-lifelog}
+    cluster: ${LIFELOGEVAL_ELASTIC_CLUSTER:-elasticsearch}
