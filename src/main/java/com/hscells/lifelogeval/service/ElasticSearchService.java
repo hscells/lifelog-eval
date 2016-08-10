@@ -2,8 +2,12 @@ package com.hscells.lifelogeval.service;
 
 import com.hscells.lifelogeval.config.ElasticSearchConfiguration;
 import com.hscells.lifelogeval.model.LifelogDocument;
+import org.elasticsearch.action.delete.DeleteAction;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -11,10 +15,17 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +37,8 @@ public class ElasticSearchService implements AutoCloseable {
     private Client client;
 
     private static final String LIFELOG_ANNOTATION_TYPE = "annotation";
+
+    private static final Logger logger = LoggerFactory.getLogger(ElasticSearchService.class);
 
     public ElasticSearchService(ElasticSearchConfiguration config) throws UnknownHostException {
         this.config = config;
@@ -41,9 +54,6 @@ public class ElasticSearchService implements AutoCloseable {
     private Map<String, Object> transformDocument(LifelogDocument lifelogDocument) {
         Map<String, Object> document = new HashMap<String, Object>();
         document.put("id", lifelogDocument.getId());
-        document.put("timestamp", lifelogDocument.getTimestamp());
-        document.put("location", lifelogDocument.getLocation());
-        document.put("activity", lifelogDocument.getActivity());
         for (String key : lifelogDocument.getAnnotations().keySet()) {
             document.put(key, lifelogDocument.getAnnotations().get(key));
         }
@@ -51,7 +61,7 @@ public class ElasticSearchService implements AutoCloseable {
     }
 
     /**
-     * Add a lifelog image to the index
+     * Add a lifelog image annotation to the index
      * @param lifelogDocument
      * @return The response from elasticsearch
      */
@@ -61,6 +71,28 @@ public class ElasticSearchService implements AutoCloseable {
                 .setSource(document)
                 .setContentType(XContentType.JSON)
                 .get();
+    }
+
+    /**
+     * Add multiple lifelog image annotations to the index
+     * @param lifelogDocuments
+     */
+    public void indexDocuments(List<LifelogDocument> lifelogDocuments) {
+        for (LifelogDocument lifelogDocument : lifelogDocuments) {
+            IndexResponse response = indexDocument(lifelogDocument);
+            if (!response.isCreated()) {
+                logger.error(String.format("Could not index document with id: %s", lifelogDocument.getId()));
+            }
+        }
+    }
+
+    /**
+     * Delete everything, including the index
+     * @return
+     */
+    public DeleteResponse deleteIndex() {
+        DeleteRequest deleteRequest = new DeleteRequest(config.getIndex());
+        return client.delete(deleteRequest).actionGet();
     }
 
     /**
@@ -77,13 +109,15 @@ public class ElasticSearchService implements AutoCloseable {
      * @param query A JSON string in the format of an elasticsearch query
      * @return The response from elasticsearch
      */
-    public SearchResponse search(String query) {
+    public SearchResponse search(String field, String query) {
+        QueryBuilder qs = QueryBuilders.queryStringQuery("\"" + query + "\"")
+                .field(field)
+                .analyzeWildcard(true);
+
         return client.prepareSearch(config.getIndex())
                 .setTypes(LIFELOG_ANNOTATION_TYPE)
-                .setSearchType(SearchType.DFS_QUERY_AND_FETCH)
-                .setQuery(query)
-                .execute()
-                .actionGet();
+                .setQuery(qs)
+                .get();
     }
 
     @Override

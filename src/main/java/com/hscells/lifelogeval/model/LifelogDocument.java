@@ -12,9 +12,6 @@ public class LifelogDocument {
 
     private String id;
     private Map<String, Object> annotations;
-    private String timestamp;
-    private String location;
-    private String activity;
 
     public LifelogDocument() {
     }
@@ -25,30 +22,6 @@ public class LifelogDocument {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getActivity() {
-        return activity;
-    }
-
-    public void setActivity(String activity) {
-        this.activity = activity;
     }
 
     public Map<String, Object> getAnnotations() {

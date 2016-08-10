@@ -3,7 +3,9 @@ package com.hscells.lifelogeval;
 import com.hscells.lifelogeval.config.ElasticSearchConfiguration;
 import com.hscells.lifelogeval.config.LifeogEvalApplicationConfiguration;
 import com.hscells.lifelogeval.resource.ElasticResource;
+import com.hscells.lifelogeval.resource.EvalResource;
 import com.hscells.lifelogeval.service.ElasticSearchService;
+import com.hscells.lifelogeval.service.EvalService;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -21,8 +23,10 @@ public class LifelogEvalApplication extends Application<LifeogEvalApplicationCon
         final ElasticSearchConfiguration elasticSearchConfiguration = configuration.getElasticSearchConfiguration();
 
         final ElasticSearchService elasticSearchService = new ElasticSearchService(elasticSearchConfiguration);
+        final EvalService evalService = new EvalService(elasticSearchService);
 
         environment.jersey().register(new ElasticResource(elasticSearchService));
+        environment.jersey().register(new EvalResource(evalService));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.hscells.lifelogeval.resource;
 
 import com.hscells.lifelogeval.model.LifelogDocument;
 import com.hscells.lifelogeval.service.ElasticSearchService;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -30,24 +31,28 @@ public class ElasticResource {
 
     @Path("/index")
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public IndexResponse putDocument(LifelogDocument document) {
-        return elasticSearchService.indexDocument(document);
+    public void postDocuments(List<LifelogDocument> documents) {
+        elasticSearchService.indexDocuments(documents);
+    }
+
+    @Path("/index")
+    @DELETE
+    public DeleteResponse deleteDocuments() {
+        return elasticSearchService.deleteIndex();
     }
 
     @Path("/get/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Object> putDocument(@PathParam("id") String id) {
+    public Map<String, Object> postDocument(@PathParam("id") String id) {
         return elasticSearchService.getDocument(id).getSource();
     }
 
-    @Path("/search")
-    @POST
+    @Path("/search/{field}/{query}")
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Map<String, Object>> searchDocuments(String query) {
-        SearchResponse response = elasticSearchService.search(query);
-        logger.info(String.valueOf(response.getHits().getTotalHits()));
+    public List<Map<String, Object>> searchDocuments(@PathParam("field") String field, @PathParam("query") String query) {
+        SearchResponse response = elasticSearchService.search(field, query);
         SearchHit[] hits = response.getHits().hits();
         List<Map<String, Object>> result = new ArrayList<>();
         for (SearchHit hit : hits) {
