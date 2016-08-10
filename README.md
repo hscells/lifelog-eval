@@ -31,6 +31,17 @@ which will build everything needed to run the server. After building,
 it can be started by running:
 
  - `build/install/lifelog-eval/bin/lifelog-eval server configuration.yml`
+ 
+## Interacting with the server
+
+ - delete the index `DELETE  /api/elastic/index`
+ - add one or more documents to the index `POST    /api/elastic/index`
+ - get a document from the index: `GET     /api/elastic/get/{id}`
+ - query the index `GET     /api/elastic/search/{field}/{query}`
+ - TREC-style query `GET     /api/eval/query/{field}/{query}` 
+ 
+When adding documents to the index, the format should look similar to
+the format below.
 
 ## Exporting data
 
@@ -39,26 +50,29 @@ and annotating some images somehow, it's time to export it for
 evaluation!
 
 The `src/main/python/export-annotations.py` script will do this for you
-and will export a JSON file that contains the annotations. For example:
+and will export a JSON file that contains the annotations. This is the 
+structure needed for adding annotations for the index. For example:
 
 ```json
 [
 ...
   {
     "image_id": "b00000782_21i6bq_20150218_151313e",
-    "tags": [
-      "computer screen",
-      "keyboard",
-      "office"
-    ],
-    "text": null,
-    "query": "computer office",
-    "assessments": {
-      "headphones": 0,
-      "juice": 0,
-      "computer": 7,
-      "car": 0,
-      "office": 7
+    "annotations": {
+      "tags": [
+        "computer screen",
+        "keyboard",
+        "office"
+      ],
+      "text": null,
+      "query": "computer office",
+      "assessments": {
+        "headphones": 0,
+        "juice": 0,
+        "computer": 7,
+        "car": 0,
+        "office": 7
+      }
     }
   },
 ...
