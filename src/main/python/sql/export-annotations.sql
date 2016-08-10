@@ -6,13 +6,13 @@ LEFT JOIN annotated_query_images qry ON qry.image_id = img.id
 LEFT JOIN annotated_tag_images tag ON tag.image_id = img.id
 -- the database I'm using is limited to postgres 9.1, so I have to do some weird stuff for relevance assessment
 LEFT JOIN (
-SELECT
+  SELECT
   DISTINCT
   -- this inner image_id is joined to the outer image_id
   image_id,
   -- we can transpose the columns into arrays (which flattens them)
   array(
-      -- the id of the annotation is pretty useless so we can grab the name from the concepts table
+  -- the id of the annotation is pretty useless so we can grab the name from the concepts table
       SELECT
         c.value
       FROM annotated_assessment_images a
@@ -26,4 +26,5 @@ SELECT
       WHERE a.image_id = ass1.image_id
   ) relevance
   FROM annotated_assessment_images ass1) ass2 ON ass2.image_id = img.id
-
+-- finally, just skip any images where there are no annotations at all
+WHERE txt.annotation IS NOT NULL OR qry.annotation IS NOT NULL OR tag.annotation IS NOT NULL OR ass2.annotation IS NOT NULL

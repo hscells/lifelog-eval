@@ -29,9 +29,9 @@ def export_json(output_file):
         if assessment_annotations is not None:
             assessment = dict(zip(assessment_annotations, assessment_relevences))
         else:
-            assessment = {}
-        data.append({'image_id': image_id, 'text': text, 'tags': tags, 'query': query,
-                     'assessments': assessment})
+            assessment = None
+        data.append({'id': image_id, 'annotations': {'text': text, 'tags': tags, 'query': query,
+                     'assessments': assessment}})
 
     cursor.close()
     with open(output_file, 'w') as f:
