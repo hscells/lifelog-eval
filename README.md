@@ -6,7 +6,7 @@ Evaluate lifelog annotations, and interact with them through an API.
 
 ### Requirements
 
-YYMV, however, these are the tools and libraries I used in order to get
+YMMV, however, these are the tools and libraries I used in order to get
 this system running.
 
  - elasticsearch `Version 2.2.0`
