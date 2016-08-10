@@ -14,9 +14,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,7 +25,7 @@ public class ElasticSearchService implements AutoCloseable {
     private ElasticSearchConfiguration config;
     private Client client;
 
-    private static final String INDEX_NAME = "lifelog";
+    private static final String LIFELOG_ANNOTATION_TYPE = "annotation";
 
     public ElasticSearchService(ElasticSearchConfiguration config) throws UnknownHostException {
         this.config = config;
@@ -59,7 +57,7 @@ public class ElasticSearchService implements AutoCloseable {
      */
     public IndexResponse indexDocument(LifelogDocument lifelogDocument) {
         Map<String, Object> document = transformDocument(lifelogDocument);
-        return client.prepareIndex(config.getIndex(), INDEX_NAME, lifelogDocument.getId())
+        return client.prepareIndex(config.getIndex(), LIFELOG_ANNOTATION_TYPE, lifelogDocument.getId())
                 .setSource(document)
                 .setContentType(XContentType.JSON)
                 .get();
@@ -71,7 +69,7 @@ public class ElasticSearchService implements AutoCloseable {
      * @return The response from elasticsearch
      */
     public GetResponse getDocument(String id) {
-        return client.prepareGet(config.getIndex(), INDEX_NAME, id).get();
+        return client.prepareGet(config.getIndex(), LIFELOG_ANNOTATION_TYPE, id).get();
     }
 
     /**
@@ -81,7 +79,7 @@ public class ElasticSearchService implements AutoCloseable {
      */
     public SearchResponse search(String query) {
         return client.prepareSearch(config.getIndex())
-                .setTypes(INDEX_NAME)
+                .setTypes(LIFELOG_ANNOTATION_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_AND_FETCH)
                 .setQuery(query)
                 .execute()
