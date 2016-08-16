@@ -40,34 +40,14 @@ it can be started by running:
  - query the index `GET     /api/elastic/search/{field}/{query}`
  - TREC-style query `POST     /api/eval/query`
 
-When adding documents to the index, the format should look similar to
-the format below:
-
-```
-{
-   "id": "b00000552_21i7lf_20150429_131044e",
-   "annotations": {
-        "text": "I am driving in my car there is...",
-        "tag": ["car", "steering wheel"]
-        "query": "driving car",
-        "assessment" [
-            {
-                "concept": "car",
-                "value": 9
-            },
-            {
-                "concept": "juice",
-                "value": 0
-            }            
-        ]
-   }
-}
-```
+When adding documents to the index, the format should look identical to
+the format used when [exporting](#exporting-data) data (if you are doing
+that).
 
 When issuing a trec-style experiment to the service, the request should
 look like this:
 
-```
+```json
 {
   "fields": [
     "tags",
@@ -100,9 +80,8 @@ structure needed for adding annotations for the index. For example:
 
 ```json
 [
-...
   {
-    "image_id": "b00000782_21i6bq_20150218_151313e",
+    "id": "b00000782_21i6bq_20150218_151313e",
     "annotations": {
       "tags": [
         "computer screen",
@@ -120,7 +99,6 @@ structure needed for adding annotations for the index. For example:
       }
     }
   },
-...
 ]
 ```
 
