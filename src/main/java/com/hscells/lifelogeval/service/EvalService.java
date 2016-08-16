@@ -1,8 +1,11 @@
 package com.hscells.lifelogeval.service;
 
 import com.hscells.lifelogeval.model.Run;
+import com.hscells.lifelogeval.model.experiment.Experiment;
+import com.hscells.lifelogeval.model.experiment.Topic;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.search.SearchHitField;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,14 +26,27 @@ public class EvalService {
         this.elasticSearchService = elasticSearchService;
     }
 
-    public String query(String field, String query) {
-        SearchResponse response = elasticSearchService.search(field, query);
-        List<Run> run = new ArrayList<>();
-        final int[] i = {0};
-        response.getHits().forEach(hit -> {
-            run.add(new Run(field, hit.getId(), i[0]++ , hit.getScore()));
-        });
-        return run.stream().map(Run::toString).collect(Collectors.joining("\n"));
+    public String query(Experiment experiment) {
+        String results = "";
+
+        for (Topic topic : experiment.getTopics()) {
+            QueryStringQueryBuilder query = QueryBuilders.queryStringQuery("\"" + topic.getQuery() + "\"");
+
+            for (String field : experiment.getFields()) {
+                query = query.field(field);
+            }
+
+            SearchResponse response = elasticSearchService.search(query);
+            List<Run> run = new ArrayList<>();
+            final int[] i = {0};
+            response.getHits().forEach(hit -> {
+                // TODO change 0 to query id
+                run.add(new Run(topic.getQueryId(), hit.getId(), i[0]++ , hit.getScore(), topic.getDescription()));
+            });
+            results += run.stream().map(Run::toString).collect(Collectors.joining("\n")) + "\n";
+        }
+
+        return results;
     }
 
 }

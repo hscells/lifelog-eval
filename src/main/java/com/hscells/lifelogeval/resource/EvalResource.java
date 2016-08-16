@@ -1,5 +1,6 @@
 package com.hscells.lifelogeval.resource;
 
+import com.hscells.lifelogeval.model.experiment.Experiment;
 import com.hscells.lifelogeval.service.EvalService;
 
 import javax.ws.rs.*;
@@ -17,11 +18,11 @@ public class EvalResource {
         this.evalService = evalService;
     }
 
-    @Path("/query/{field}/{query}")
-    @GET
+    @Path("/query")
+    @POST
     @Produces(MediaType.TEXT_PLAIN)
-    public String postQuery(@PathParam("field") String field, @PathParam("query") String query) {
-        return evalService.query(field, query);
+    public String postQuery(Experiment experiment) {
+        return evalService.query(experiment);
     }
 
 }

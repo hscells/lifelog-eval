@@ -38,10 +38,55 @@ it can be started by running:
  - add one or more documents to the index `POST    /api/elastic/index`
  - get a document from the index: `GET     /api/elastic/get/{id}`
  - query the index `GET     /api/elastic/search/{field}/{query}`
- - TREC-style query `GET     /api/eval/query/{field}/{query}` 
- 
+ - TREC-style query `POST     /api/eval/query`
+
 When adding documents to the index, the format should look similar to
-the format below.
+the format below:
+
+```
+{
+   "id": "b00000552_21i7lf_20150429_131044e",
+   "annotations": {
+        "text": "I am driving in my car there is...",
+        "tag": ["car", "steering wheel"]
+        "query": "driving car",
+        "assessment" [
+            {
+                "concept": "car",
+                "value": 9
+            },
+            {
+                "concept": "juice",
+                "value": 0
+            }            
+        ]
+   }
+}
+```
+
+When issuing a trec-style experiment to the service, the request should
+look like this:
+
+```
+{
+  "fields": [
+    "tags",
+    "text"
+  ],
+  "topics": [
+    {
+      "queryId": "001",
+      "query": "The Red Taxi",
+      "description": "Find the moment(s) when I boarded a Red taxi, only to get out again shortly afterwards."
+    },
+    {
+      "queryId": "002",
+      "query": "Photographing a Lake",
+      "description": "Find the moment(s) when I was taking photos of a lake."
+    }
+  ]
+}
+```
 
 ## Exporting data
 
