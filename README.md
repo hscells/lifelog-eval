@@ -32,6 +32,10 @@ it can be started by running:
 
  - `build/install/lifelog-eval/bin/lifelog-eval server configuration.yml`
  
+Alternatively, there is a script named `start-services.sh` which will
+build and start everything automatically, so long as everything is 
+installed.
+ 
 ## Interacting with the server
 
  - delete the index `DELETE  /api/elastic/index`
@@ -67,6 +71,10 @@ look like this:
   ]
 }
 ```
+
+Importing data into elasticsearch can done by running the 
+`import-annotations.sh` script. This will automatically export data from
+the database and import it into the elasticsearch index.
 
 ## Exporting data
 
