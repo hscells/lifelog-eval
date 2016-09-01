@@ -112,3 +112,12 @@ structure needed for adding annotations for the index. For example:
 
 _Note_: for an annotation type with no annotation, the null value is
 used. This is as per the JSON [specification](http://www.json.org/).
+
+## Running Experiments
+
+There is a shell script that can be run to perform experiments on the
+data set. You will need some topics (that were distributed by NTCIR) and
+you will need the qrels (for use in trec_eval).
+
+This script can be invoked by running `./run-experiment.sh`. For usage,
+look at the source of it.
