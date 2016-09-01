@@ -2,6 +2,11 @@ package com.hscells.lifelogeval.service;
 
 import com.hscells.lifelogeval.config.ElasticSearchConfiguration;
 import com.hscells.lifelogeval.model.LifelogDocument;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
+import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.delete.DeleteAction;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -27,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Harry Scells on 2/08/2016.
@@ -90,9 +96,13 @@ public class ElasticSearchService implements AutoCloseable {
      * Delete everything, including the index
      * @return
      */
-    public DeleteResponse deleteIndex() {
-        DeleteRequest deleteRequest = new DeleteRequest(config.getIndex());
-        return client.delete(deleteRequest).actionGet();
+    public boolean deleteIndex() throws ExecutionException, InterruptedException {
+        if (client.admin().indices().exists(new IndicesExistsRequest(config.getIndex())).get().isExists()) {
+            DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(config.getIndex());
+            client.admin().indices().flush(new FlushRequest(config.getIndex())).get();
+            return client.admin().indices().delete(deleteIndexRequest).get().isAcknowledged();
+        }
+        return true;
     }
 
     /**

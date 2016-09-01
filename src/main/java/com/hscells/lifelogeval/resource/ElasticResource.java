@@ -2,6 +2,7 @@ package com.hscells.lifelogeval.resource;
 
 import com.hscells.lifelogeval.model.LifelogDocument;
 import com.hscells.lifelogeval.service.ElasticSearchService;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Harry Scells on 4/08/2016.
@@ -37,7 +39,7 @@ public class ElasticResource {
 
     @Path("/index")
     @DELETE
-    public DeleteResponse deleteDocuments() {
+    public boolean deleteDocuments() throws ExecutionException, InterruptedException {
         return elasticSearchService.deleteIndex();
     }
 
