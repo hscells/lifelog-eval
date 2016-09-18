@@ -4,6 +4,7 @@ import argparse, json, re, operator, math, os
 import matplotlib.pyplot as plt
 import numpy as np
 from autocorrect import spell
+from xml.dom import minidom
 
 concepts_regex = re.compile(r'[^a-zA-Z0-9-]+')
 
@@ -128,31 +129,53 @@ def display_scores(scores):
     plt.show()
 
 
-def sample(scores, max=50):
+def sample(scores, topics_file='lifelog_qrels/lifelogging_topics_formal.xml', max=50):
+
+    xmldoc = minidom.parse(topics_file)
+    topic_nodes = xmldoc.getElementsByTagName('topic')
+
+    queries = ""
+
+    for node in topic_nodes:
+        topic = {}
+        for tag in node.childNodes:
+            if tag.nodeType == tag.ELEMENT_NODE:
+                name, value = tag.tagName, tag.childNodes[0].nodeValue
+                if name == 'narrative':
+                    queries += value
+
+    query_terms = set(string_to_concepts(queries))
+    topics = []
+
     concepts = {}
     terms = []
 
     with open(os.path.dirname(os.path.abspath(__file__)) + '/data/stopwords.txt') as f:
         stopwords = f.read().split('\n')
 
-    for term in scores:
+    for term in query_terms:
         if term not in stopwords:
+            topics.append(term)
+
+    for term in scores:
+        if term not in stopwords and term in topics:
             concepts[term] = scores[term]
 
     sorted_concepts = sorted(concepts.items(), key=lambda x: x[1], reverse=True)
 
     sorted_terms = [x[0] for x in sorted_concepts]
+
     indices = gen_log_space(len(sorted_terms), max)
     for i in indices:
         terms.append(sorted_terms[i])
 
     for i in range(len(terms)):
         terms[i] = spell(terms[i]).lower()
-    print(terms)
+    print(terms, len(terms))
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='Analyse exported annotations')
     argparser.add_argument('input_file', help='The name of the json file to read')
     args = argparser.parse_args()
 
-    sample(idf(args.input_file), 100)
+    sample(idf(args.input_file), max=100)
