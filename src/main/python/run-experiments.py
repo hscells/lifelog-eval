@@ -25,7 +25,7 @@ def run_experiments(topics_file, output_file):
         topics.append(topic)
 
     experiment['topics'] = topics
-    experiment['fields'] = ['text']
+    experiment['fields'] = ['text', 'tags', 'query', 'assessment']
 
     r = requests.post('http://localhost:8080/api/eval/query', json=experiment)
 

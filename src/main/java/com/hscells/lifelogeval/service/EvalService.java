@@ -37,13 +37,14 @@ public class EvalService {
             }
 
             SearchResponse response = elasticSearchService.search(query);
-            List<Run> run = new ArrayList<>();
-            final int[] i = {0};
-            response.getHits().forEach(hit -> {
-                // TODO change 0 to query id
-                run.add(new Run(topic.getQueryId(), hit.getId(), i[0]++ , hit.getScore(), topic.getDescription()));
-            });
-            results += run.stream().map(Run::toString).collect(Collectors.joining("\n")) + "\n";
+            if (response.getHits().getHits().length > 0) {
+                List<Run> run = new ArrayList<>();
+                final int[] i = {0};
+                response.getHits().forEach(hit -> {
+                    run.add(new Run(topic.getQueryId(), hit.getId(), i[0]++, hit.getScore(), topic.getDescription()));
+                });
+                results += run.stream().map(Run::toString).collect(Collectors.joining("\n")) + "\n";
+            }
         }
 
         return results;
