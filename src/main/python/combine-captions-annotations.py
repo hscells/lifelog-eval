@@ -26,12 +26,18 @@ def combine(captions_file, annotations_file):
         image_id = annotation['id']
         annotated.append(image_id)
 
+    for annotation in annotations:
+        text = annotation['annotations']['text']
+        if text is None or len(text) == 0:
+            annotation['annotations']['text'] = captions[annotation['id']]
+
     for image_id, caption in captions.items():
         caption = caption.replace('\t', '')
         if image_id not in annotated:
             annotations.append({'id': image_id,
                                 'annotations': {'text': caption, 'tags': None,
                                                 'query': None, 'assessments': None}})
+
 
     return annotations
 
