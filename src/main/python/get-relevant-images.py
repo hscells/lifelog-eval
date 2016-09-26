@@ -22,7 +22,7 @@ def extract_images(qrel_file, max_images=50):
         qrel_id, _, image, relevant = line.split(' ')
         if qrel_id not in qrel_count.keys():
             qrel_count[qrel_id] = 0
-        if relevant == '1' and qrel_count[qrel_id] < max_images:
+        if relevant == '1' and (qrel_count[qrel_id] < max_images or max_images < 0):
             qrel_count[qrel_id] += 1
             images.add(parse_image(image))
 
@@ -35,6 +35,6 @@ if __name__ == '__main__':
     argparser.add_argument('output', help='The file to output to')
 
     args = argparser.parse_args()
-    image_list = extract_images(args.qrel)
+    image_list = extract_images(args.qrel, max_images=-1)
     with open(args.output, 'w') as f:
         f.write('\n'.join(image_list))

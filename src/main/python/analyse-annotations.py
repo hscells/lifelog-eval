@@ -113,17 +113,16 @@ def tfidf(input_file):
     return scores
 
 
-def display_scores(scores):
+def display_scores(scores, title='title', xlabel='x', ylabel='y'):
     sorted_concepts = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-    print(sorted_concepts)
 
     terms = [x[0] for x in sorted_concepts]
     scores = [x[1] for x in sorted_concepts]
 
     plt.bar(range(len(terms)), scores, color='green', alpha=1)
-    plt.xlabel('Terms')
-    plt.ylabel('Frequency')
-    plt.title('Term Frequency of Annotations')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
     plt.legend()
 
     plt.show()
@@ -178,4 +177,4 @@ if __name__ == '__main__':
     argparser.add_argument('input_file', help='The name of the json file to read')
     args = argparser.parse_args()
 
-    sample(idf(args.input_file), max=100)
+    display_scores(idf(args.input_file), title='IDF Scores for terms', xlabel='Terms', ylabel='Scores')
