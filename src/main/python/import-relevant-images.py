@@ -26,23 +26,22 @@ def import_images(target_dir, images_file):
             images = f.read().split('\n')
 
     db_images = {}
-    with open(target_dir, 'wb') as f:
-        # walk each directory in the target directory
-        for root, dirs, files in os.walk(args[1]):
-            # walk each file in each one of the directories
-            for file in files:
-                for image_id in images:
-                    if image_id not in db_images.keys() and image_id in file:
-                        with open(root + '/' + file, 'rb') as i:
-                            image = Image.open(i)
-                            (w, h) = image.size
+    # walk each directory in the target directory
+    for root, dirs, files in os.walk(target_dir):
+        # walk each file in each one of the directories
+        for file in files:
+            for image_id in images:
+                if image_id not in db_images.keys() and image_id in file:
+                    with open(root + '/' + file, 'rb') as i:
+                        image = Image.open(i)
+                        (w, h) = image.size
 
-                            image = image.resize((w / 2, h / 2), Image.ANTIALIAS)
+                        image = image.resize((w / 2, h / 2), Image.ANTIALIAS)
 
-                            buffer = BytesIO()
-                            image.save(buffer, format='JPEG')
+                        buffer = BytesIO()
+                        image.save(buffer, format='JPEG')
 
-                            db_images[image_id] = buffer
+                        db_images[image_id] = buffer
 
     print(db_images)
 
