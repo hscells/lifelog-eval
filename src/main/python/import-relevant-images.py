@@ -61,7 +61,7 @@ def import_images(target_dir, images_file):
                            [image_id, image_data])
             i += 1
             bar.update(i)
-    cursor.commit()
+    conn.commit()
     cursor.close()
 
 
