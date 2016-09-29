@@ -35,6 +35,6 @@ if __name__ == '__main__':
     argparser.add_argument('output', help='The file to output to')
 
     args = argparser.parse_args()
-    image_list = extract_images(args.qrel, max_images=-1)
+    image_list = extract_images(args.qrel, max_images=30)
     with open(args.output, 'w') as f:
         f.write('\n'.join(image_list))
