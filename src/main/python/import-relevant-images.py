@@ -41,7 +41,7 @@ def import_images(target_dir, images_file):
                         buffer = BytesIO()
                         image.save(buffer, format='JPEG')
 
-                        db_images[image_id] = buffer
+                        db_images[image_id] = base64.b64encode(buffer)
 
     print(db_images)
 
