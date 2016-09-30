@@ -37,16 +37,7 @@ def import_images(target_dir, images_file):
                 # for performance we can use a dict
                 if image_id not in db_images.keys() and image_id in file:
                     with open(root + '/' + file, 'rb') as i:
-                        image = Image.open(i)
-                        (w, h) = image.size
-
-                        # we want to resize the image to save data
-                        image = image.resize((int(w / 2), int(h / 2)), Image.ANTIALIAS)
-
-                        buffer = BytesIO()
-                        image.save(buffer, format='JPEG')
-
-                        db_images[image_id] = base64.b64encode(buffer.getvalue())
+                        db_images[image_id] = base64.b64encode(i.read())
 
     conn = pg8000.connect(user=os.environ.get("LIFELOG_DB_USER"),
                           password=os.environ.get("LIFELOG_DB_PASS"),
@@ -55,10 +46,16 @@ def import_images(target_dir, images_file):
     cursor = conn.cursor()
 
     with progressbar.ProgressBar(max_value=len(db_images)) as bar:
+        # i = 0
+        # for image_id, image_data in db_images.items():
+        #     cursor.execute('INSERT INTO images (name, data) VALUES (%s, %s)',
+        #                    [image_id, image_data])
+        #     i += 1
+        #     bar.update(i)
         i = 0
         for image_id, image_data in db_images.items():
-            cursor.execute('INSERT INTO images (name, data) VALUES (%s, %s)',
-                           [image_id, image_data])
+            cursor.execute('UPDATE images SET data = %s WHERE name = %s',
+                           [image_data, image_id])
             i += 1
             bar.update(i)
     conn.commit()
