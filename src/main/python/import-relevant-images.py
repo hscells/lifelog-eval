@@ -37,7 +37,7 @@ def import_images(target_dir, images_file):
                 # for performance we can use a dict
                 if image_id not in db_images.keys() and image_id in file:
                     with open(root + '/' + file, 'rb') as i:
-                        db_images[image_id] = base64.b64encode(i.read())
+                        db_images[image_id] = base64.b64encode(i.read()).decode()
 
     conn = pg8000.connect(user=os.environ.get("LIFELOG_DB_USER"),
                           password=os.environ.get("LIFELOG_DB_PASS"),
@@ -58,6 +58,8 @@ def import_images(target_dir, images_file):
                            [image_data, image_id])
             i += 1
             bar.update(i)
+            if i % 10 == 0:
+                conn.commit()
     conn.commit()
     cursor.close()
 
