@@ -23,17 +23,41 @@ def export_json(output_file):
         cursor.execute(sql)
 
     results = cursor.fetchall()
-    data = []
+
+    cursor.close()
+
+    annotations = {}
     for row in results:
         image_id, text, query, tags, assessment_annotations, assessment_relevences = row
         if assessment_annotations is not None:
             assessment = dict(zip(assessment_annotations, assessment_relevences))
         else:
             assessment = None
-        data.append({'id': image_id, 'annotations': {'text': text, 'tags': tags, 'query': query,
-                     'assessments': assessment}})
+        if image_id not in annotations.keys():
+            annotations[image_id] = {'id': image_id, 'annotations': {'text': text,
+                                                                     'tags': tags,
+                                                                     'query': query,
+                                                                     'assessments': assessment}}
+        else:
+            if annotations[image_id]['annotations']['text'] is None:
+                annotations[image_id]['annotations']['text'] = text
+            elif text is not None:
+                annotations[image_id]['annotations']['text'] += ' ' + text
 
-    cursor.close()
+            if annotations[image_id]['annotations']['tags'] is None:
+                annotations[image_id]['annotations']['tags'] = tags
+            elif tags is not None:
+                annotations[image_id]['annotations']['tags'] += tags
+
+            if annotations[image_id]['annotations']['query'] is None:
+                annotations[image_id]['annotations']['query'] = query
+            elif query is not None:
+                annotations[image_id]['annotations']['query'] += ' ' + query
+
+    data = []
+    for annotation in annotations.values():
+        data.append(annotation)
+
     with open(output_file, 'w') as f:
         f.write(json.dumps(data, sort_keys=False, indent=2, separators=(',', ': ')))
 
