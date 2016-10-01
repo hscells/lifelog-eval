@@ -6,6 +6,7 @@ import com.hscells.lifelogeval.model.experiment.Topic;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,7 @@ public class EvalService {
         String results = "";
 
         for (Topic topic : experiment.getTopics()) {
-            QueryStringQueryBuilder query = QueryBuilders.queryStringQuery("\"" + topic.getQuery() + "\"");
+            SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery(topic.getQuery());
 
             for (String field : experiment.getFields()) {
                 query = query.field(field);

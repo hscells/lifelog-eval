@@ -120,14 +120,16 @@ public class ElasticSearchService implements AutoCloseable {
      * @return The response from elasticsearch
      */
     public SearchResponse search(String field, String query) {
-        QueryBuilder qs = QueryBuilders.queryStringQuery("\"" + query + "\"")
+        QueryBuilder qs = QueryBuilders.simpleQueryStringQuery(query)
                 .field(field)
+                .lenient(true)
                 .analyzeWildcard(true);
         return search(qs);
     }
 
     public SearchResponse search(QueryBuilder qs) {
         return client.prepareSearch(config.getIndex())
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setTypes(LIFELOG_ANNOTATION_TYPE)
                 .setQuery(qs)
                 .get();

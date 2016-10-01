@@ -2,9 +2,6 @@ package com.hscells.lifelogeval.resource;
 
 import com.hscells.lifelogeval.model.LifelogDocument;
 import com.hscells.lifelogeval.service.ElasticSearchService;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
