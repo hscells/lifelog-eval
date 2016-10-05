@@ -3,8 +3,8 @@
 import os, sys, json, argparse, requests
 from xml.dom import minidom
 
-# TODO: This should run an experiment for more than just the textual annotation type
-def run_experiments(topics_file, output_file):
+
+def run_experiments(topics_file, fields):
     xmldoc = minidom.parse(topics_file)
     topic_nodes = xmldoc.getElementsByTagName('topic')
 
@@ -25,18 +25,21 @@ def run_experiments(topics_file, output_file):
         topics.append(topic)
 
     experiment['topics'] = topics
-    experiment['fields'] = ['text', 'tags', 'query', 'assessment']
+    experiment['fields'] = fields
 
     r = requests.post('http://localhost:8080/api/eval/query', json=experiment)
 
-    with open(output_file, 'w') as f:
-        f.write(r.text)
-
+    return r.text
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='Export annotations from database')
     argparser.add_argument('topics', help='A topics.xml file distributed by NTCIR')
-    argparser.add_argument('output', help='The file to write the trec run to')
+    argparser.add_argument('fields', help='The fields to run in the query', action='append',
+                           choices=['text', 'tags', 'query', 'assessment'])
+    argparser.add_argument('output', help='The file to write the trec run to',
+                           default=sys.stdin, type=argparse.FileType('r'))
     args = argparser.parse_args()
 
-    run_experiments(args.topics, args.output)
+    print(args)
+
+    args.output.write(run_experiments(args.topics))
