@@ -12,6 +12,7 @@ this system running.
  - elasticsearch `Version 2.2.0`
  - java `version "1.8.0_31"`
  - python `Python 3.5.1`
+ - [trec_eval](https://github.com/hscells/homebrew-ir)
 
 ## Running the server
 
