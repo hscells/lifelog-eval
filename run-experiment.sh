@@ -31,6 +31,9 @@ ASSESSMENT=./experiments/assessment
 TABLES=./experiments/tables.latex
 QRELS=./processed_lsat_qrels.txt
 
+## create experiments folder if it doesn't exist
+mkdir experiments &> /dev/null
+
 ## perform the actual experiments
 python3 ./src/main/python/experiments.py $1 -o ${ALL}.txt -f text -f tags -f query -f assessment
 python3 ./src/main/python/experiments.py $1 -o ${TEXT}.txt -f text
