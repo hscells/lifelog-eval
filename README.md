@@ -36,7 +36,30 @@ Alternatively, there is a script named `start-services.sh` which will
 build and start everything automatically, so long as everything is 
 installed.
  
-## Interacting with the server
+
+## Running Experiments
+
+Once you have the server started, you will need to import the data. I 
+have some scripts I use to automate this process, `get-annotations.sh`
+and `import-annotations.sh`. You can read below to see the format 
+annotations need to be in to import the annotations. 
+
+There is a shell script that can be run to perform experiments on the
+data set. You will need some topics (that were distributed by NTCIR) and
+you will need the qrels (for use in trec_eval).
+
+This script can be invoked by running `./run-experiment.sh`. This script
+takes two arguments:
+
+ - The path to the topics file
+ - The path to the qrels file
+ 
+If you would like to run experiments for yourself, you can obtain the
+data by visiting the [ntcir-12 website](http://research.nii.ac.jp/ntcir/permission/ntcir-12/perm-en-Lifelog.html).
+
+## Rest Server
+ 
+### Interacting with the server
 
  - delete the index `DELETE  /api/elastic/index`
  - add one or more documents to the index `POST    /api/elastic/index`
@@ -76,7 +99,7 @@ Importing data into elasticsearch can done by running the
 `import-annotations.sh` script. This will automatically export data from
 the database and import it into the elasticsearch index.
 
-## Exporting data
+### Exporting data
 
 After [importing the data](https://github.com/hscells/lifelog-sampling#importing-the-data),
 and annotating some images somehow, it's time to export it for 
@@ -112,12 +135,3 @@ structure needed for adding annotations for the index. For example:
 
 _Note_: for an annotation type with no annotation, the null value is
 used. This is as per the JSON [specification](http://www.json.org/).
-
-## Running Experiments
-
-There is a shell script that can be run to perform experiments on the
-data set. You will need some topics (that were distributed by NTCIR) and
-you will need the qrels (for use in trec_eval).
-
-This script can be invoked by running `./run-experiment.sh`. For usage,
-look at the source of it.
