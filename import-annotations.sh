@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # This script will automatically import the annotations from the database to an elasticsearch index
 ## ensure `./start-services.sh` has been run before running this script!
 ## ensure you also have curl installed before running this script!
