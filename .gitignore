@@ -2,3 +2,8 @@
 *.iml
 .gradle/
 build/
+
+experiments/
+ntcir_data/
+*.txt
+*.json
