@@ -1,10 +1,15 @@
 # python3
 
-import os, sys, json, argparse, requests
+import argparse
+import requests
+import sys
 from xml.dom import minidom
 
 
-def run_experiments(topics_file, fields):
+def run_experiments(topics_file, fields=None):
+    if fields is None:
+        fields = ['text', 'tags', 'query', 'assessment']
+
     xmldoc = minidom.parse(topics_file)
     topic_nodes = xmldoc.getElementsByTagName('topic')
 
@@ -31,15 +36,14 @@ def run_experiments(topics_file, fields):
 
     return r.text
 
+
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='Export annotations from database')
     argparser.add_argument('topics', help='A topics.xml file distributed by NTCIR')
-    argparser.add_argument('fields', help='The fields to run in the query', action='append',
-                           choices=['text', 'tags', 'query', 'assessment'])
-    argparser.add_argument('output', help='The file to write the trec run to',
-                           default=sys.stdin, type=argparse.FileType('r'))
+    argparser.add_argument('-f', '--fields', help='The fields to run in the query',
+                           action='append', choices=['text', 'tags', 'query', 'assessment'])
+    argparser.add_argument('-o', '--output', help='The file to write the trec run to',
+                           default=sys.stdout, type=argparse.FileType('w'), required=False)
     args = argparser.parse_args()
 
-    print(args)
-
-    args.output.write(run_experiments(args.topics))
+    args.output.write(run_experiments(args.topics, args.fields))
