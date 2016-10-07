@@ -7,5 +7,5 @@
 curl -X DELETE localhost:8080/api/elastic/index
 
 ## now we can import the annotations
-curl -X POST -H "Content-Type: application/json" -d @combined.json localhost:8080/api/elastic/index
+curl -X POST -H "Content-Type: application/json" -d @$1 localhost:8080/api/elastic/index
 
