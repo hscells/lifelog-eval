@@ -131,6 +131,7 @@ public class ElasticSearchService implements AutoCloseable {
         return client.prepareSearch(config.getIndex())
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setTypes(LIFELOG_ANNOTATION_TYPE)
+                .setSize(1000)
                 .setQuery(qs)
                 .get();
     }

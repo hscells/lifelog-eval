@@ -11,10 +11,11 @@ def transform(captions):
     captions = json.loads(captions.read())
     annotations = []
     for image_id, caption in captions.items():
-        annotations.append({'id': image_id, 'annotations': {'text': caption,
-                                                            'tags': None,
-                                                            'assessments': None,
-                                                            'query': None}})
+        if ' ' not in image_id:
+            annotations.append({'id': image_id, 'annotations': {'text': caption,
+                                                                'tags': None,
+                                                                'assessments': None,
+                                                                'query': None}})
     return json.dumps(annotations, sort_keys=False, indent=2, separators=(',', ': '))
 
 
