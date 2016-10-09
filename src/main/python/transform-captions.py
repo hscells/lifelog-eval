@@ -12,6 +12,10 @@ def transform(captions):
     annotations = []
     for image_id, caption in captions.items():
         if ' ' not in image_id:
+            caption = caption.replace('redblue', 'red blue')
+            caption = caption.replace('bluered', 'red blue')
+            caption = caption.replace('presentinglecturing', 'presenting lecturing')
+            caption = caption.replace('lecturingpresenting', 'presenting lecturing')
             annotations.append({'id': image_id, 'annotations': {'text': caption,
                                                                 'tags': None,
                                                                 'assessments': None,

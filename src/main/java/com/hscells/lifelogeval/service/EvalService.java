@@ -41,9 +41,7 @@ public class EvalService {
             if (response.getHits().getHits().length > 0) {
                 List<Run> run = new ArrayList<>();
                 final int[] i = {0};
-                response.getHits().forEach(hit -> {
-                    run.add(new Run(topic.getQueryId(), hit.getId(), i[0]++, hit.getScore(), topic.getDescription()));
-                });
+                response.getHits().forEach(hit -> run.add(new Run(topic.getQueryId(), hit.getId(), i[0]++, hit.getScore(), experiment.getName())));
                 results += run.stream().map(Run::toString).collect(Collectors.joining("\n")) + "\n";
             }
         }

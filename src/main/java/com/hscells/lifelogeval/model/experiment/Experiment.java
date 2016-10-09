@@ -9,6 +9,7 @@ public class Experiment {
 
     private List<String> fields;
     private List<Topic> topics;
+    private String name;
 
     public Experiment() {
     }
@@ -27,5 +28,13 @@ public class Experiment {
 
     public void setTopics(List<Topic> topics) {
         this.topics = topics;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

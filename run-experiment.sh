@@ -35,11 +35,11 @@ QRELS=./processed_lsat_qrels.txt
 mkdir experiments &> /dev/null
 
 ## perform the actual experiments
-python3 ./src/main/python/experiments.py $1 -o ${ALL}.txt -f text -f tags -f query -f assessment
-python3 ./src/main/python/experiments.py $1 -o ${TEXT}.txt -f text
-python3 ./src/main/python/experiments.py $1 -o ${TAGS}.txt -f tags
-python3 ./src/main/python/experiments.py $1 -o ${QUERY}.txt -f query
-python3 ./src/main/python/experiments.py $1 -o ${ASSESSMENT}.txt -f assessment
+python3 ./src/main/python/experiments.py $1 -n all -o ${ALL}.txt -f text -f tags -f query -f assessment
+python3 ./src/main/python/experiments.py $1 -n text -o ${TEXT}.txt -f text
+python3 ./src/main/python/experiments.py $1 -n tags -o ${TAGS}.txt -f tags
+python3 ./src/main/python/experiments.py $1 -n query -o ${QUERY}.txt -f query
+python3 ./src/main/python/experiments.py $1 -n assessment -o ${ASSESSMENT}.txt -f assessment
 
 ## create a processed qrels file that aligns with the ids in the experiments
 python3 ./src/main/python/process-qrels.py $2 > ${QRELS}
