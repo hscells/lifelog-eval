@@ -11,6 +11,22 @@ import sys
 import argparse
 
 
+def format_time(td):
+    d, h, m = td.days, td.seconds // 3600, (td.seconds // 60) % 60
+    if d > 0:
+        return '{} days, {} hours'.format(d, h)
+    elif h == 1:
+        return '{} hour, {} minutes'.format(h, m)
+    elif h > 1:
+        return '{} hours, {} minutes'.format(h, m)
+    elif m == 1:
+        return '{} minute'.format(m)
+    elif m > 1:
+        return '{} minutes'.format(m)
+    return '{} seconds'.format(td.seconds)
+
+
+
 def annotators_table(cursor):
     """
     Create a LaTeX table containing the totals of the number of images annotated
@@ -19,9 +35,9 @@ def annotators_table(cursor):
     """
     table_start = '''
 \\begin{center}
-    \\begin{tabular}{ | l | l | l | p{5cm} |}
+    \\begin{tabular}{ | l | l | l | l | p{5cm} |}
     \hline
-    Text & Tags & Query & Relevance Assessment \\\\ \hline
+    & Text & Tags & Query & Relevance Assessment \\\\ \hline
     '''
     table_end = '''
     \end{tabular}
@@ -29,25 +45,45 @@ def annotators_table(cursor):
     '''
 
     queries = [
-        'SELECT count(id) FROM annotated_text_images;',
-        'SELECT count(id) FROM annotated_tag_images;',
-        'SELECT count(id) FROM annotated_query_images;',
-        'SELECT count(DISTINCT image_id) FROM annotated_assessment_images;'
+        'SELECT count(id), avg(end_time - start_time), sum(end_time - start_time) '
+        'FROM annotated_text_images;',
+        'SELECT count(id), avg(end_time - start_time), sum(end_time - start_time) '
+        'FROM annotated_tag_images;',
+        'SELECT count(id), avg(end_time - start_time), sum(end_time - start_time) '
+        'FROM annotated_query_images;',
+        '''SELECT count(DISTINCT image_id), avg(a.end_time - a.start_time), q.z
+           FROM annotated_assessment_images a,
+           (SELECT DISTINCT sum(x.y) z FROM
+            (SELECT DISTINCT image_id, avg(end_time - start_time) y
+             FROM annotated_assessment_images GROUP BY image_id) x) q
+           GROUP BY q.z;'''
     ]
 
     query_results = []
 
     for query in queries:
         cursor.execute(query)
-        result = cursor.fetchone()[0]
-        query_results.append(result)
+        result = cursor.fetchone()
+        query_results.append((format_time(result[1]), result[0], format_time(result[2])))
 
-    return '{0}{1}{2}'.format(table_start,
-                              '{} & {} & {} & {} \\\\ \hline'.format(query_results[0],
-                                                                     query_results[1],
-                                                                     query_results[2],
-                                                                     query_results[3]),
-                              table_end)
+    print(query_results)
+
+    count = 'Count & {} & {} & {} & {} \\\\ \hline'.format(query_results[0][1],
+                                                           query_results[1][1],
+                                                           query_results[2][1],
+                                                           query_results[3][1])
+    avg_time = 'Average Time & {} & {} & {} & {} \\\\ \hline'.format(query_results[0][0],
+                                                                     query_results[1][0],
+                                                                     query_results[2][0],
+                                                                     query_results[3][0])
+
+    total_time = 'Total Time & {} & {} & {} & {} \\\\ \hline'.format(query_results[0][2],
+                                                                     query_results[1][2],
+                                                                     query_results[2][2],
+                                                                     query_results[3][2])
+
+    return '{0}{1}\n    {2}\n    {3}{4}'.format(table_start, count, avg_time, total_time,
+                                                table_end)
 
 
 def trec_eval_table(results):
