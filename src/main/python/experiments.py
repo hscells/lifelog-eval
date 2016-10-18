@@ -46,8 +46,16 @@ if __name__ == '__main__':
                            default=sys.stdout, type=argparse.FileType('w'), required=False)
     argparser.add_argument('-n', '--name', help='The name of the experiment',
                            default='annotation', type=str, required=False)
+    argparser.add_argument('-t', '--topic', help='The name of the topic to output',
+                           default=None, type=str, required=False)
     argparser.add_argument('topics', help='A topics.xml file distributed by NTCIR')
 
     args = argparser.parse_args()
 
-    args.output.write(run_experiments(args.topics, args.fields, args.name))
+    results = run_experiments(args.topics, args.fields, args.name)
+    if args.topic is None:
+        args.output.write(results)
+    else:
+        args.output.write('\n'.join(list(filter(lambda x: x.split('\t')[0] == args.topic,
+                                                [line for line in results.split('\n')]))) +
+                          '\n')

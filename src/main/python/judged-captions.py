@@ -10,19 +10,26 @@ def process(qrels_file, annotations_file):
 
     annotations = json.loads(annotations_file.read())
 
-    ids = set()
-    new_annotations = []
+    qrels = {}
+    new_annotations = {}
 
     for row in qrels_file.readlines():
-        _, _, image_path, _ = row.split(' ')
+        topic_id, _, image_path, _ = row.split(' ')
         image_id = image_path.split('/')[-1].replace('.jpg', '')
-        ids.add(image_id)
+        if topic_id not in qrels.keys():
+            qrels[topic_id] = set()
+        else:
+            qrels[topic_id].add(image_id)
 
-    for annotation in annotations:
-        if annotation['id'] in ids:
-            new_annotations.append(annotation)
+    for topic_id in qrels.keys():
+        for annotation in annotations:
+            if annotation['id'] in qrels[topic_id]:
+                if topic_id not in new_annotations.keys():
+                    new_annotations[topic_id] = []
+                else:
+                    new_annotations[topic_id].append(annotation)
 
-    return json.dumps(new_annotations)
+    return new_annotations
 
 
 if __name__ == '__main__':
@@ -31,10 +38,11 @@ if __name__ == '__main__':
                            type=argparse.FileType('r'), default=sys.stdin)
     argparser.add_argument('-a', '--annotations', help='The annotations file to load',
                            type=argparse.FileType('r'), default=sys.stdin)
-    argparser.add_argument('-o', '--output', help='The new annotations file',
-                           type=argparse.FileType('w'), default=sys.stdin)
+    argparser.add_argument('-d', '--dest', help='The folder to output annotations to')
 
     args = argparser.parse_args()
 
-    data = process(args.qrels, args.annotations)
-    args.output.write(data)
+    annotations = process(args.qrels, args.annotations)
+    for topic_id, annotations in annotations.items():
+        with open(args.dest + topic_id + '.json', 'w') as f:
+            f.write(json.dumps(annotations, sort_keys=False, indent=2, separators=(',', ': ')))
