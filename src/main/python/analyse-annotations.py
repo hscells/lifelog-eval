@@ -119,13 +119,18 @@ def display_scores(scores, title='title', xlabel='x', ylabel='y'):
     terms = [x[0] for x in sorted_concepts]
     scores = [x[1] for x in sorted_concepts]
 
-    plt.bar(range(len(terms)), scores, color='green', alpha=1)
+    print(len(terms))
+
+    fig, ax = plt.subplots()
+    plt.xticks(range(len(terms)), terms, rotation='vertical')
+    ax.plot(range(len(scores)), scores, color='blue', alpha=1)
+    ax.locator_params(nbins=40, axis='x')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
     plt.legend()
 
-    plt.show()
+    plt.savefig('idf-scores.pdf', bbox_inches='tight')
 
 
 def sample(scores, topics_file='lifelog_qrels/lifelogging_topics_formal.xml', max=50):
@@ -177,4 +182,5 @@ if __name__ == '__main__':
     argparser.add_argument('input_file', help='The name of the json file to read')
     args = argparser.parse_args()
 
-    display_scores(idf(args.input_file), title='IDF Scores for terms', xlabel='Terms', ylabel='Scores')
+    display_scores(idf(args.input_file), title='IDF Scores for Terms', xlabel='Terms',
+                   ylabel='Scores')
