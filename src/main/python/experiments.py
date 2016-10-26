@@ -41,7 +41,7 @@ def run_experiments(topics_file, fields=None, experiment_name='annotation'):
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='Export annotations from database')
     argparser.add_argument('-f', '--fields', help='The fields to run in the query',
-                           action='append', choices=['text', 'tags', 'query', 'assessment'])
+                           action='append', choices=['text', 'tags', 'query', 'assessments'])
     argparser.add_argument('-o', '--output', help='The file to write the trec run to',
                            default=sys.stdout, type=argparse.FileType('w'), required=False)
     argparser.add_argument('-n', '--name', help='The name of the experiment',
