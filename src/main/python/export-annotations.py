@@ -30,7 +30,10 @@ def export_json(output_file):
     for row in results:
         image_id, text, query, tags, assessment_annotations, assessment_relevences = row
         if assessment_annotations is not None:
-            assessment = dict(zip(assessment_annotations, assessment_relevences))
+            assessment = []
+            for concept, weight in zip(assessment_annotations, assessment_relevences):
+                for i in range(weight):
+                    assessment.append(concept)
         else:
             assessment = None
         if image_id not in annotations.keys():
