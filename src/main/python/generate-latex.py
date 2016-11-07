@@ -75,6 +75,44 @@ ORDER BY total DESC;
     return total
 
 
+def relevant_images_count(cursor, file):
+    """
+
+    :param cursor:
+    :param file:
+    :return:
+    """
+    sql = 'SELECT topic_id, count(image_id) ' \
+          'FROM images_topics ' \
+          'GROUP BY topic_id ' \
+          'ORDER BY topic_id;'
+
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    topics = {}
+    total = 0
+    for row in results:
+        topics[row[0]] = row[1]
+
+    ind = np.arange(len(topics) + 1)[1:]
+    width = 1.0
+    fig, ax = plt.subplots()
+    rects = ax.bar(topics.keys(), topics.values(), width)
+    # attach some text labels
+    for rect in rects:
+        height = rect.get_height()
+        ax.text(rect.get_x() + rect.get_width()/2., height+10,
+                '%d' % int(height),
+                ha='center', va='bottom', rotation='vertical', fontsize='smaller')
+    ax.set_xticks(ind + width / 2)
+    ax.set_xticklabels(ind, minor=False, rotation='vertical', fontsize='smaller')
+    plt.title('Number of Relevant Images Per Topic')
+    plt.xlabel('Topic Id')
+    plt.ylabel('Relevant Images')
+    plt.savefig(file)
+    return total
+
+
 def annotators_table(cursor):
     """
     Create a LaTeX table containing the totals of the number of images annotated
@@ -167,6 +205,9 @@ if __name__ == '__main__':
     argparser.add_argument('--annotator_breakdown',
                            help='table showing the number of annotations',
                            required=False, default=None, type=str)
+    argparser.add_argument('--relevant_images',
+                           help='plot the relevant images',
+                           required=False, default=None, type=str)
     argparser.add_argument('--trec_eval_results',
                            help='table showing a trec_eval results',
                            required=False, type=argparse.FileType('r'))
@@ -196,5 +237,7 @@ if __name__ == '__main__':
         run_arg(trec_eval_table(args.trec_eval_results.read()), 'trec_eval results')
     if args.annotator_breakdown is not None:
         run_arg(annotators_breakdown(cursor, args.annotator_breakdown), 'annotator breakdown')
+    if args.relevant_images is not None:
+        run_arg(relevant_images_count(cursor, args.relevant_images), 'relevant images')
 
     conn.close()

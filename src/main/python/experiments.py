@@ -24,9 +24,9 @@ def run_experiments(topics_file, fields=None, experiment_name='annotation'):
                 if name == 'id':
                     topic['queryId'] = value
                 elif name == 'title':
-                    topic['query'] = value
-                elif name == 'description':
                     topic['description'] = value
+                elif name == 'description':
+                    topic['query'] = value
         topics.append(topic)
 
     experiment['topics'] = topics

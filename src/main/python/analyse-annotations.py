@@ -113,7 +113,7 @@ def tfidf(input_file):
     return scores
 
 
-def display_scores(scores, title='title', xlabel='x', ylabel='y'):
+def display_scores(scores, title='title', xlabel='x', ylabel='y', filename='scores.pdf'):
     sorted_concepts = sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
     terms = [x[0] for x in sorted_concepts]
@@ -123,14 +123,14 @@ def display_scores(scores, title='title', xlabel='x', ylabel='y'):
 
     fig, ax = plt.subplots()
     plt.xticks(range(len(terms)), terms, rotation='vertical')
-    ax.plot(range(len(scores)), scores, color='blue', alpha=1)
+    ax.semilogy(range(len(scores)), scores, color='blue', alpha=1)
     ax.locator_params(nbins=40, axis='x')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
     plt.legend()
 
-    plt.savefig('idf-scores.pdf', bbox_inches='tight')
+    plt.savefig(filename, bbox_inches='tight')
 
 
 def sample(scores, topics_file='lifelog_qrels/lifelogging_topics_formal.xml', max=50):
@@ -182,5 +182,7 @@ if __name__ == '__main__':
     argparser.add_argument('input_file', help='The name of the json file to read')
     args = argparser.parse_args()
 
-    display_scores(idf(args.input_file), title='IDF Scores for Terms', xlabel='Terms',
-                   ylabel='Scores')
+    display_scores(idf(args.input_file), title='Inverse Document Frequency of annotations',
+                   xlabel='Terms', ylabel='Scores', filename='idf-scores.pdf')
+    display_scores(tf(args.input_file), title='Term Frequency of annotations', xlabel='Terms',
+                   ylabel='Scores', filename='tf-scores.pdf')

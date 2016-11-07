@@ -26,12 +26,23 @@ def export_json(output_file):
 
     cursor.close()
 
+    replacement_concepts = {'groceries': 'grocery',
+                            'television': 'tv',
+                            'barber': 'barbershop',
+                            'ship': 'deck',
+                            'supermarket': 'shopping',
+                            'antique': 'antiques',
+                            'shop': 'store',
+                            'cake': 'homework'}
+
     annotations = {}
     for row in results:
         image_id, text, query, tags, assessment_annotations, assessment_relevences = row
         if assessment_annotations is not None:
             assessment = []
             for concept, weight in zip(assessment_annotations, assessment_relevences):
+                if concept in replacement_concepts.keys():
+                    concept = replacement_concepts[concept]
                 for i in range(weight):
                     assessment.append(concept)
         else:
