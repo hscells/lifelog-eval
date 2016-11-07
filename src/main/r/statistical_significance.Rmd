@@ -4,13 +4,18 @@ output: pdf_document
 ---
 
 First, let's define some functions to make our life easier.
-```
+```R
 # read a trec_eval file and return a data frame
 process_trec_eval <- function(filename, statistic="P_10") {
   lines <- read.csv(filename, sep = "\t", header=FALSE)
-  p10 <- subset(lines, trimws(unlist(lines[1])) == statistic)
-  p10 <- subset(p10, trimws(unlist(p10[2])) != "all")
-  p10
+  stat <- subset(lines, trimws(unlist(lines[1])) == statistic)
+  stat <- subset(stat, trimws(unlist(stat[2])) != "all")
+  stat
+}
+
+get_runid <- function(filename) {
+  lines <- read.csv(filename, sep = "\t", header=FALSE)
+  c(t(subset(lines, trimws(unlist(lines[1])) == "runid")[3]))
 }
 
 # get a vector of values from the column of a data frame
@@ -28,34 +33,40 @@ t_test <- function(run1, run2) {
 }
 
 statistical_significance <- function(text_file, tag_file, query_file, assessment_file, combined_file, statistic="P_10") {
-  text = process_trec_eval(text_file, statistic)
-  tag = process_trec_eval(tag_file, statistic)
-  query = process_trec_eval(query_file, statistic)
-  assessment = NA
-  if (!is.na(assessment_file)) {
-    assessment = process_trec_eval(assessment_file, statistic)
-  }
-  combined = process_trec_eval(combined_file, statistic)
+  # load the data
+  text <- process_trec_eval(text_file, statistic)
+  text_label <- get_runid(text_file)
   
+  tag <-  process_trec_eval(tag_file, statistic)
+  tag_label <- get_runid(tag_file)
+  
+  query <-  process_trec_eval(query_file, statistic)
+  query_label <- get_runid(query_file)
+  
+  assessment <- ifelse
+  assessment_label <- NA
+  if (!is.na(assessment_file)) {
+    assessment <- process_trec_eval(assessment_file, statistic)
+    assessment_label <- get_runid(assessment_file)
+  }
+  
+  combined = process_trec_eval(combined_file, statistic)
+  combined_label=get_runid(combined_file)
+  
+  print(paste(text_label, tag_label))
   t_test(text, tag)
   t_test(text, query)
-  if (!is.na(assessment)) {
-    t_test(text, assessment)
-  }
+  ifelse(!is.na(assessment), t_test(text, assessment), NA)
   t_test(text, combined)  
   
   t_test(tag, text)
   t_test(tag, query)
-  if (!is.na(assessment)) {
-    t_test(tag, assessment)
-  }
+  ifelse(!is.na(assessment), t_test(tag, assessment), NA)
   t_test(tag, combined)
   
   t_test(query, text)
   t_test(query, tag)
-  if (!is.na(assessment)) {
-    t_test(query, assessment)
-  }
+  ifelse(!is.na(assessment), t_test(query, assessment), NA)
   t_test(query, combined)
   
   if (!is.na(assessment)) {
@@ -68,16 +79,14 @@ statistical_significance <- function(text_file, tag_file, query_file, assessment
   t_test(combined, text)
   t_test(combined, tag)
   t_test(combined, query)
-  if (!is.na(assessment)) {
-    t_test(combined, assessment)
-  }
+  ifelse(!is.na(assessment), t_test(combined, assessment), NA)
 }
 ```
 
 Alright, first up is the manual annotations. We're first going to look at the statistical significance between each methodology (but using the title field from the topics).
 ```
 manual_title_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/text.eval.txt"
-manual_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/text.eval.txt"
+manual_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/tags.eval.txt"
 manual_title_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/query.eval.txt"
 manual_title_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/assessment.eval.txt"
 manual_title_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/all.eval.txt"
@@ -91,7 +100,7 @@ statistical_significance(manual_title_text_file, manual_title_tag_file, manual_t
 Next, we can do the exact same thing, however now we use the description field to run experiments.
 ```
 manual_desc_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/text.eval.txt"
-manual_desc_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/text.eval.txt"
+manual_desc_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/tags.eval.txt"
 manual_desc_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/query.eval.txt"
 manual_desc_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/assessment.eval.txt"
 manual_desc_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/all.eval.txt"
@@ -105,13 +114,13 @@ statistical_significance(manual_desc_text_file, manual_desc_tag_file, manual_des
 Now we can do this to the learnt annotations as well:
 ```
 auto_title_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-text.eval.txt"
-auto_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-text.eval.txt"
+auto_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-tags.eval.txt"
 auto_title_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-query.eval.txt"
 auto_title_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-assessment.eval.txt"
 auto_title_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-all.eval.txt"
 
 auto_desc_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-text.eval.txt"
-auto_desc_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-text.eval.txt"
+auto_desc_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-tags.eval.txt"
 auto_desc_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-query.eval.txt"
 auto_desc_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-all.eval.txt"
 
