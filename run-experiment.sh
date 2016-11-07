@@ -22,20 +22,23 @@ then
     exit 1
 fi
 
+TYPE=desc
+PREFIX=learnt-
+
 ## define some vars
-ALL=./experiments/all
-TEXT=./experiments/text
-TAGS=./experiments/tags
-QUERY=./experiments/query
-ASSESSMENT=./experiments/assessment
-TABLES=./experiments/tables.latex
+ALL=./experiments/${TYPE}/${PREFIX}all
+TEXT=./experiments/${TYPE}/${PREFIX}text
+TAGS=./experiments/${TYPE}/${PREFIX}tags
+QUERY=./experiments/${TYPE}/${PREFIX}query
+ASSESSMENT=./experiments/${TYPE}/${PREFIX}assessment
+TABLES=./experiments/${TYPE}/${PREFIX}tables.latex
 QRELS=./processed_lsat_qrels.txt
 
 ## create experiments folder if it doesn't exist
 mkdir experiments &> /dev/null
 
 ## perform the actual experiments
-python3 ./src/main/python/experiments.py $1 -n All -o ${ALL}.txt -f text -f tags -f query -f assessments
+python3 ./src/main/python/experiments.py $1 -n Combined -o ${ALL}.txt -f text -f tags -f query -f assessments
 python3 ./src/main/python/experiments.py $1 -n Text -o ${TEXT}.txt -f text
 python3 ./src/main/python/experiments.py $1 -n Tags -o ${TAGS}.txt -f tags
 python3 ./src/main/python/experiments.py $1 -n Query -o ${QUERY}.txt -f query
@@ -45,11 +48,11 @@ python3 ./src/main/python/experiments.py $1 -n Assessments -o ${ASSESSMENT}.txt 
 python3 ./src/main/python/process-qrels.py $2 > ${QRELS}
 
 ## evaluate using trec eval
-trec_eval -q ${QRELS} ${ALL}.txt > ${ALL}.eval.txt
-trec_eval -q ${QRELS} ${TEXT}.txt > ${TEXT}.eval.txt
-trec_eval -q ${QRELS} ${TAGS}.txt > ${TAGS}.eval.txt
-trec_eval -q ${QRELS} ${QUERY}.txt > ${QUERY}.eval.txt
-trec_eval -q ${QRELS} ${ASSESSMENT}.txt > ${ASSESSMENT}.eval.txt
+trec_eval -q -c ${QRELS} ${ALL}.txt > ${ALL}.eval.txt
+trec_eval -q -c ${QRELS} ${TEXT}.txt > ${TEXT}.eval.txt
+trec_eval -q -c ${QRELS} ${TAGS}.txt > ${TAGS}.eval.txt
+trec_eval -q -c ${QRELS} ${QUERY}.txt > ${QUERY}.eval.txt
+trec_eval -q -c ${QRELS} ${ASSESSMENT}.txt > ${ASSESSMENT}.eval.txt
 
 ## create the tables file if it doesn't exist and clear it if it does
 echo '' > ${TABLES}
