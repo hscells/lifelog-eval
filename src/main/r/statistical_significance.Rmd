@@ -1,0 +1,127 @@
+---
+title: "Statistical Significance"
+output: pdf_document
+---
+
+First, let's define some functions to make our life easier.
+```
+# read a trec_eval file and return a data frame
+process_trec_eval <- function(filename, statistic="P_10") {
+  lines <- read.csv(filename, sep = "\t", header=FALSE)
+  p10 <- subset(lines, trimws(unlist(lines[1])) == statistic)
+  p10 <- subset(p10, trimws(unlist(p10[2])) != "all")
+  p10
+}
+
+# get a vector of values from the column of a data frame
+get_values <- function(table, column) {
+  c(t(table[column]))
+}
+
+# get the values from a data frame as doubles
+row_values <- function(table) {
+  as.double(get_values(table, 3))
+}
+
+t_test <- function(run1, run2) {
+  print(t.test(row_values(run1), row_values(run2), paired=TRUE, two.sided=TRUE)$p.value)
+}
+
+statistical_significance <- function(text_file, tag_file, query_file, assessment_file, combined_file, statistic="P_10") {
+  text = process_trec_eval(text_file, statistic)
+  tag = process_trec_eval(tag_file, statistic)
+  query = process_trec_eval(query_file, statistic)
+  assessment = NA
+  if (!is.na(assessment_file)) {
+    assessment = process_trec_eval(assessment_file, statistic)
+  }
+  combined = process_trec_eval(combined_file, statistic)
+  
+  t_test(text, tag)
+  t_test(text, query)
+  if (!is.na(assessment)) {
+    t_test(text, assessment)
+  }
+  t_test(text, combined)  
+  
+  t_test(tag, text)
+  t_test(tag, query)
+  if (!is.na(assessment)) {
+    t_test(tag, assessment)
+  }
+  t_test(tag, combined)
+  
+  t_test(query, text)
+  t_test(query, tag)
+  if (!is.na(assessment)) {
+    t_test(query, assessment)
+  }
+  t_test(query, combined)
+  
+  if (!is.na(assessment)) {
+    t_test(assessment, text)
+    t_test(assessment, tag)
+    t_test(assessment, query)
+    t_test(assessment, combined)
+  }
+  
+  t_test(combined, text)
+  t_test(combined, tag)
+  t_test(combined, query)
+  if (!is.na(assessment)) {
+    t_test(combined, assessment)
+  }
+}
+```
+
+Alright, first up is the manual annotations. We're first going to look at the statistical significance between each methodology (but using the title field from the topics).
+```
+manual_title_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/text.eval.txt"
+manual_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/text.eval.txt"
+manual_title_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/query.eval.txt"
+manual_title_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/assessment.eval.txt"
+manual_title_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/all.eval.txt"
+
+#two tails t-test with p<0.05
+statistical_significance(manual_title_text_file, manual_title_tag_file, manual_title_queries_file, manual_title_assessment_file, manual_title_combined_file, "map")
+statistical_significance(manual_title_text_file, manual_title_tag_file, manual_title_queries_file, manual_title_assessment_file, manual_title_combined_file, "recip_rank")
+statistical_significance(manual_title_text_file, manual_title_tag_file, manual_title_queries_file, manual_title_assessment_file, manual_title_combined_file, "P_10")
+```
+
+Next, we can do the exact same thing, however now we use the description field to run experiments.
+```
+manual_desc_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/text.eval.txt"
+manual_desc_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/text.eval.txt"
+manual_desc_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/query.eval.txt"
+manual_desc_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/assessment.eval.txt"
+manual_desc_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/all.eval.txt"
+
+#two tails t-test with p<0.05
+statistical_significance(manual_desc_text_file, manual_desc_tag_file, manual_desc_queries_file, manual_desc_assessment_file, manual_desc_combined_file, "map")
+statistical_significance(manual_desc_text_file, manual_desc_tag_file, manual_desc_queries_file, manual_desc_assessment_file, manual_desc_combined_file, "recip_rank")
+statistical_significance(manual_desc_text_file, manual_desc_tag_file, manual_desc_queries_file, manual_desc_assessment_file, manual_desc_combined_file, "P_10")
+```
+
+Now we can do this to the learnt annotations as well:
+```
+auto_title_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-text.eval.txt"
+auto_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-text.eval.txt"
+auto_title_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-query.eval.txt"
+auto_title_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-assessment.eval.txt"
+auto_title_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-all.eval.txt"
+
+auto_desc_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-text.eval.txt"
+auto_desc_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-text.eval.txt"
+auto_desc_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-query.eval.txt"
+auto_desc_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/learnt-all.eval.txt"
+
+#two tails t-test with p<0.05
+statistical_significance(auto_title_text_file, auto_title_tag_file, auto_title_queries_file, NA, auto_title_combined_file, "map")
+statistical_significance(auto_title_text_file, auto_title_tag_file, auto_title_queries_file, NA, auto_title_combined_file, "recip_rank")
+statistical_significance(auto_title_text_file, auto_title_tag_file, auto_title_queries_file, NA, auto_title_combined_file, "P_10")
+
+#two tails t-test with p<0.05
+statistical_significance(auto_desc_text_file, auto_desc_tag_file, auto_desc_queries_file, NA, auto_desc_combined_file, "map")
+statistical_significance(auto_desc_text_file, auto_desc_tag_file, auto_desc_queries_file, NA, auto_desc_combined_file, "recip_rank")
+statistical_significance(auto_desc_text_file, auto_desc_tag_file, auto_desc_queries_file, NA, auto_desc_combined_file, "P_10")
+```
