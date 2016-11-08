@@ -4,5 +4,5 @@
 build/
 
 ntcir_data/
-*.txt
+./*.txt
 *.json

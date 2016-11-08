@@ -1,0 +1,168 @@
+
+% all
+% trec_eval results
+
+\begin{center}
+    \begin{tabular}{ | l | l | }
+    \hline
+    Metric & Score \\ \hline
+	num\_q & 48 \\ \hline
+	num\_ret & 41153 \\ \hline
+	num\_rel & 6708 \\ \hline
+	num\_rel\_ret & 336 \\ \hline
+	map & 0.0164 \\ \hline
+	gm\_map & 0.0003 \\ \hline
+	Rprec & 0.0282 \\ \hline
+	bpref & 0.0360 \\ \hline
+	recip\_rank & 0.0393 \\ \hline
+	iprec\_at\_recall\_0.00 & 0.0852 \\ \hline
+	iprec\_at\_recall\_0.10 & 0.0566 \\ \hline
+	iprec\_at\_recall\_0.20 & 0.0364 \\ \hline
+	iprec\_at\_recall\_0.30 & 0.0318 \\ \hline
+	iprec\_at\_recall\_0.40 & 0.0207 \\ \hline
+	iprec\_at\_recall\_0.50 & 0.0121 \\ \hline
+	iprec\_at\_recall\_0.60 & 0.0115 \\ \hline
+	iprec\_at\_recall\_0.70 & 0.0115 \\ \hline
+	iprec\_at\_recall\_0.80 & 0.0115 \\ \hline
+	iprec\_at\_recall\_0.90 & 0.0058 \\ \hline
+	iprec\_at\_recall\_1.00 & 0.0045 \\ \hline
+	P\_5 & 0.0125 \\ \hline
+	P\_10 & 0.0167 \\ \hline
+	P\_15 & 0.0333 \\ \hline
+	P\_20 & 0.0344 \\ \hline
+	P\_30 & 0.0389 \\ \hline
+	P\_100 & 0.0219 \\ \hline
+	P\_200 & 0.0169 \\ \hline
+	P\_500 & 0.0103 \\ \hline
+	P\_1000 & 0.0070 \\ \hline
+    \end{tabular}
+\end{center}
+
+% text
+% trec_eval results
+
+\begin{center}
+    \begin{tabular}{ | l | l | }
+    \hline
+    Metric & Score \\ \hline
+	num\_q & 48 \\ \hline
+	num\_ret & 34461 \\ \hline
+	num\_rel & 6522 \\ \hline
+	num\_rel\_ret & 186 \\ \hline
+	map & 0.0046 \\ \hline
+	gm\_map & 0.0001 \\ \hline
+	Rprec & 0.0131 \\ \hline
+	bpref & 0.0151 \\ \hline
+	recip\_rank & 0.0238 \\ \hline
+	iprec\_at\_recall\_0.00 & 0.0420 \\ \hline
+	iprec\_at\_recall\_0.10 & 0.0183 \\ \hline
+	iprec\_at\_recall\_0.20 & 0.0144 \\ \hline
+	iprec\_at\_recall\_0.30 & 0.0144 \\ \hline
+	iprec\_at\_recall\_0.40 & 0.0025 \\ \hline
+	iprec\_at\_recall\_0.50 & 0.0025 \\ \hline
+	iprec\_at\_recall\_0.60 & 0.0025 \\ \hline
+	iprec\_at\_recall\_0.70 & 0.0025 \\ \hline
+	iprec\_at\_recall\_0.80 & 0.0025 \\ \hline
+	iprec\_at\_recall\_0.90 & 0.0000 \\ \hline
+	iprec\_at\_recall\_1.00 & 0.0000 \\ \hline
+	P\_5 & 0.0167 \\ \hline
+	P\_10 & 0.0187 \\ \hline
+	P\_15 & 0.0139 \\ \hline
+	P\_20 & 0.0125 \\ \hline
+	P\_30 & 0.0090 \\ \hline
+	P\_100 & 0.0046 \\ \hline
+	P\_200 & 0.0070 \\ \hline
+	P\_500 & 0.0064 \\ \hline
+	P\_1000 & 0.0039 \\ \hline
+    \end{tabular}
+\end{center}
+
+% tags
+% trec_eval results
+
+\begin{center}
+    \begin{tabular}{ | l | l | }
+    \hline
+    Metric & Score \\ \hline
+	num\_q & 48 \\ \hline
+	num\_ret & 13196 \\ \hline
+	num\_rel & 6662 \\ \hline
+	num\_rel\_ret & 136 \\ \hline
+	map & 0.0077 \\ \hline
+	gm\_map & 0.0001 \\ \hline
+	Rprec & 0.0130 \\ \hline
+	bpref & 0.0213 \\ \hline
+	recip\_rank & 0.0172 \\ \hline
+	iprec\_at\_recall\_0.00 & 0.0433 \\ \hline
+	iprec\_at\_recall\_0.10 & 0.0268 \\ \hline
+	iprec\_at\_recall\_0.20 & 0.0223 \\ \hline
+	iprec\_at\_recall\_0.30 & 0.0158 \\ \hline
+	iprec\_at\_recall\_0.40 & 0.0158 \\ \hline
+	iprec\_at\_recall\_0.50 & 0.0044 \\ \hline
+	iprec\_at\_recall\_0.60 & 0.0044 \\ \hline
+	iprec\_at\_recall\_0.70 & 0.0044 \\ \hline
+	iprec\_at\_recall\_0.80 & 0.0044 \\ \hline
+	iprec\_at\_recall\_0.90 & 0.0000 \\ \hline
+	iprec\_at\_recall\_1.00 & 0.0000 \\ \hline
+	P\_5 & 0.0042 \\ \hline
+	P\_10 & 0.0021 \\ \hline
+	P\_15 & 0.0083 \\ \hline
+	P\_20 & 0.0125 \\ \hline
+	P\_30 & 0.0125 \\ \hline
+	P\_100 & 0.0119 \\ \hline
+	P\_200 & 0.0093 \\ \hline
+	P\_500 & 0.0054 \\ \hline
+	P\_1000 & 0.0028 \\ \hline
+    \end{tabular}
+\end{center}
+
+% query
+% trec_eval results
+
+\begin{center}
+    \begin{tabular}{ | l | l | }
+    \hline
+    Metric & Score \\ \hline
+	num\_q & 48 \\ \hline
+	num\_ret & 37591 \\ \hline
+	num\_rel & 6708 \\ \hline
+	num\_rel\_ret & 245 \\ \hline
+	map & 0.0076 \\ \hline
+	gm\_map & 0.0001 \\ \hline
+	Rprec & 0.0099 \\ \hline
+	bpref & 0.0103 \\ \hline
+	recip\_rank & 0.0173 \\ \hline
+	iprec\_at\_recall\_0.00 & 0.0520 \\ \hline
+	iprec\_at\_recall\_0.10 & 0.0363 \\ \hline
+	iprec\_at\_recall\_0.20 & 0.0123 \\ \hline
+	iprec\_at\_recall\_0.30 & 0.0123 \\ \hline
+	iprec\_at\_recall\_0.40 & 0.0084 \\ \hline
+	iprec\_at\_recall\_0.50 & 0.0084 \\ \hline
+	iprec\_at\_recall\_0.60 & 0.0084 \\ \hline
+	iprec\_at\_recall\_0.70 & 0.0066 \\ \hline
+	iprec\_at\_recall\_0.80 & 0.0066 \\ \hline
+	iprec\_at\_recall\_0.90 & 0.0045 \\ \hline
+	iprec\_at\_recall\_1.00 & 0.0045 \\ \hline
+	P\_5 & 0.0042 \\ \hline
+	P\_10 & 0.0021 \\ \hline
+	P\_15 & 0.0083 \\ \hline
+	P\_20 & 0.0146 \\ \hline
+	P\_30 & 0.0181 \\ \hline
+	P\_100 & 0.0121 \\ \hline
+	P\_200 & 0.0138 \\ \hline
+	P\_500 & 0.0089 \\ \hline
+	P\_1000 & 0.0051 \\ \hline
+    \end{tabular}
+\end{center}
+
+% assessment
+% trec_eval results
+
+\begin{center}
+    \begin{tabular}{ | l | l | }
+    \hline
+    Metric & Score \\ \hline
+
+    \end{tabular}
+\end{center}
+
