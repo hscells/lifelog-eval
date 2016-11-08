@@ -4,10 +4,10 @@ output: pdf_document
 ---
 
 First, let's define some functions to make our life easier.
-```R
+```{R}
 # read a trec_eval file and return a data frame
-process_trec_eval <- function(filename, statistic="P_10") {
-  lines <- read.csv(filename, sep = "\t", header=FALSE)
+process_trec_eval <- function(filename, statistic = "P_10") {
+  lines <- read.csv(filename, sep = "\t", header = FALSE)
   stat <- subset(lines, trimws(unlist(lines[1])) == statistic)
   stat <- subset(stat, trimws(unlist(stat[2])) != "all")
   stat
@@ -32,6 +32,21 @@ t_test <- function(run1, run2) {
   print(t.test(row_values(run1), row_values(run2), paired=TRUE, two.sided=TRUE)$p.value)
 }
 
+label <- function(label1, label2) {
+  print(paste(label1, label2))
+}
+
+between_statistical_significance <- function(run1_file, run2_file, statistic="P_10") {
+  run1 <- process_trec_eval(run1_file, statistic)
+  run1_label <- get_runid(run1_file)
+  
+  run2 <- process_trec_eval(run2_file, statistic)
+  run2_label <- get_runid(run2_file)
+  
+  label(run1_label, run2_label)
+  t_test(run1, run2)
+}
+
 statistical_significance <- function(text_file, tag_file, query_file, assessment_file, combined_file, statistic="P_10") {
   # load the data
   text <- process_trec_eval(text_file, statistic)
@@ -43,48 +58,69 @@ statistical_significance <- function(text_file, tag_file, query_file, assessment
   query <-  process_trec_eval(query_file, statistic)
   query_label <- get_runid(query_file)
   
-  assessment <- ifelse
+  assessment <- NA
   assessment_label <- NA
   if (!is.na(assessment_file)) {
-    assessment <- process_trec_eval(assessment_file, statistic)
-    assessment_label <- get_runid(assessment_file)
+      assessment <- process_trec_eval(assessment_file, statistic)
+      assessment_label <- get_runid(assessment_file)
   }
+  print(assessment)
   
-  combined = process_trec_eval(combined_file, statistic)
-  combined_label=get_runid(combined_file)
+  combined <- process_trec_eval(combined_file, statistic)
+  combined_label <- get_runid(combined_file)
   
-  print(paste(text_label, tag_label))
+  label(text_label, tag_label)
   t_test(text, tag)
+  label(text_label, query_label)
   t_test(text, query)
+  ifelse(!is.na(assessment_label), label(text_label, assessment_label), NA)
   ifelse(!is.na(assessment), t_test(text, assessment), NA)
+  label(text_label, combined_label)
   t_test(text, combined)  
   
+  label(tag_label, text_label)
   t_test(tag, text)
+  label(tag_label, query_label)
   t_test(tag, query)
+  ifelse(!is.na(assessment_label), label(tag_label, assessment_label), NA)
   ifelse(!is.na(assessment), t_test(tag, assessment), NA)
+  label(tag_label, combined_label)
   t_test(tag, combined)
   
+  label(query_label, text_label)
   t_test(query, text)
+  label(query_label, tag_label)
   t_test(query, tag)
+  ifelse(!is.na(assessment), label(query_label, assessment_label), NA)
   ifelse(!is.na(assessment), t_test(query, assessment), NA)
+  label(query_label, combined_label)
   t_test(query, combined)
   
   if (!is.na(assessment)) {
+    label(assessment_label, text_label)
     t_test(assessment, text)
+    label(assessment_label, tag_label)
     t_test(assessment, tag)
+    label(assessment_label, query_label)
     t_test(assessment, query)
+    label(assessment_label, combined_label)
     t_test(assessment, combined)
   }
   
+  label(combined_label, text_label)
   t_test(combined, text)
+  label(combined_label, tag_label)
   t_test(combined, tag)
+  label(combined_label, query_label)
   t_test(combined, query)
+  ifelse(!is.na(assessment), label(combined_label, assessment_label), NA)
   ifelse(!is.na(assessment), t_test(combined, assessment), NA)
+  print("")
 }
 ```
 
 Alright, first up is the manual annotations. We're first going to look at the statistical significance between each methodology (but using the title field from the topics).
-```
+```{R}
 manual_title_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/text.eval.txt"
 manual_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/tags.eval.txt"
 manual_title_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/query.eval.txt"
@@ -92,13 +128,16 @@ manual_title_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/exp
 manual_title_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/all.eval.txt"
 
 #two tails t-test with p<0.05
+print("map")
 statistical_significance(manual_title_text_file, manual_title_tag_file, manual_title_queries_file, manual_title_assessment_file, manual_title_combined_file, "map")
+print("recip_rank")
 statistical_significance(manual_title_text_file, manual_title_tag_file, manual_title_queries_file, manual_title_assessment_file, manual_title_combined_file, "recip_rank")
+print("P_10")
 statistical_significance(manual_title_text_file, manual_title_tag_file, manual_title_queries_file, manual_title_assessment_file, manual_title_combined_file, "P_10")
 ```
 
 Next, we can do the exact same thing, however now we use the description field to run experiments.
-```
+```{R}
 manual_desc_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/text.eval.txt"
 manual_desc_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/tags.eval.txt"
 manual_desc_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/query.eval.txt"
@@ -106,13 +145,40 @@ manual_desc_assessment_file = "/Users/harryscells/Repositories/lifelog-eval/expe
 manual_desc_combined_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/desc/all.eval.txt"
 
 #two tails t-test with p<0.05
+print("map")
 statistical_significance(manual_desc_text_file, manual_desc_tag_file, manual_desc_queries_file, manual_desc_assessment_file, manual_desc_combined_file, "map")
+print("recip_rank")
 statistical_significance(manual_desc_text_file, manual_desc_tag_file, manual_desc_queries_file, manual_desc_assessment_file, manual_desc_combined_file, "recip_rank")
+print("P_10")
 statistical_significance(manual_desc_text_file, manual_desc_tag_file, manual_desc_queries_file, manual_desc_assessment_file, manual_desc_combined_file, "P_10")
 ```
 
-Now we can do this to the learnt annotations as well:
+We also do this between each run (for title and description)!
+```{R}
+between_statistical_significance(manual_title_text_file, manual_desc_text_file, "map")
+between_statistical_significance(manual_title_text_file, manual_desc_text_file, "recip_rank")
+between_statistical_significance(manual_title_text_file, manual_desc_text_file, "P_10")
+
+between_statistical_significance(manual_title_tag_file, manual_desc_tag_file, "map")
+between_statistical_significance(manual_title_tag_file, manual_desc_tag_file, "recip_rank")
+between_statistical_significance(manual_title_tag_file, manual_desc_tag_file, "P_10")
+
+between_statistical_significance(manual_title_queries_file, manual_desc_queries_file, "map")
+between_statistical_significance(manual_title_queries_file, manual_desc_queries_file, "recip_rank")
+between_statistical_significance(manual_title_queries_file, manual_desc_queries_file, "P_10")
+
+between_statistical_significance(manual_title_assessment_file, manual_desc_assessment_file, "map")
+between_statistical_significance(manual_title_assessment_file, manual_desc_assessment_file, "recip_rank")
+between_statistical_significance(manual_title_assessment_file, manual_desc_assessment_file, "P_10")
+
+between_statistical_significance(manual_title_combined_file, manual_desc_combined_file, "map")
+between_statistical_significance(manual_title_combined_file, manual_desc_combined_file, "recip_rank")
+between_statistical_significance(manual_title_combined_file, manual_desc_combined_file, "P_10")
 ```
+
+
+Now we can do this to the learnt annotations as well:
+```{R}
 auto_title_text_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-text.eval.txt"
 auto_title_tag_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-tags.eval.txt"
 auto_title_queries_file = "/Users/harryscells/Repositories/lifelog-eval/experiments/title/learnt-query.eval.txt"
@@ -133,4 +199,20 @@ statistical_significance(auto_title_text_file, auto_title_tag_file, auto_title_q
 statistical_significance(auto_desc_text_file, auto_desc_tag_file, auto_desc_queries_file, NA, auto_desc_combined_file, "map")
 statistical_significance(auto_desc_text_file, auto_desc_tag_file, auto_desc_queries_file, NA, auto_desc_combined_file, "recip_rank")
 statistical_significance(auto_desc_text_file, auto_desc_tag_file, auto_desc_queries_file, NA, auto_desc_combined_file, "P_10")
+
+between_statistical_significance(auto_title_text_file, auto_desc_text_file, "map")
+between_statistical_significance(auto_title_text_file, auto_desc_text_file, "recip_rank")
+between_statistical_significance(auto_title_text_file, auto_desc_text_file, "P_10")
+
+between_statistical_significance(auto_title_tag_file, auto_desc_tag_file, "map")
+between_statistical_significance(auto_title_tag_file, auto_desc_tag_file, "recip_rank")
+between_statistical_significance(auto_title_tag_file, auto_desc_tag_file, "P_10")
+
+between_statistical_significance(auto_title_queries_file, auto_desc_queries_file, "map")
+between_statistical_significance(auto_title_queries_file, auto_desc_queries_file, "recip_rank")
+between_statistical_significance(auto_title_queries_file, auto_desc_queries_file, "P_10")
+
+between_statistical_significance(auto_title_combined_file, auto_desc_combined_file, "map")
+between_statistical_significance(auto_title_combined_file, auto_desc_combined_file, "recip_rank")
+between_statistical_significance(auto_title_combined_file, auto_desc_combined_file, "P_10")
 ```
