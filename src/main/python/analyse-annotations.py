@@ -122,9 +122,7 @@ def display_scores(scores, title='title', xlabel='x', ylabel='y', filename='scor
     print(len(terms))
 
     fig, ax = plt.subplots()
-    plt.xticks(range(len(terms)), terms, rotation='vertical')
     ax.semilogy(range(len(scores)), scores, color='blue', alpha=1)
-    ax.locator_params(nbins=40, axis='x')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
